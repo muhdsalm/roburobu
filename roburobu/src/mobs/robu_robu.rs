@@ -1,6 +1,6 @@
-use raylib::prelude::*;
+use raylib::{prelude::*, misc::AsF32};
 
-use super::Mob;
+
 
 #[derive(PartialEq)]
 enum Jump {
@@ -15,17 +15,31 @@ pub struct RobuRobu {
     w: i32,
     h: i32,
     jumping: Jump,
+    robu_robu: Texture2D,
+    ground_level: i32,
+    texture_x: f32,
+    texture_y: f32
 }
 
-impl Mob for RobuRobu {
+impl RobuRobu {
 
-    fn update(&mut self) {
+    pub fn update(&mut self) {
         
-        self.jump()
+        self.jump();
+        self.texture_x += 1.;
+
+        if self.texture_x == 3. {
+            self.texture_x = 0.;
+            self.texture_y += 1.;
+        }
+        if self.texture_y == 2. && self.texture_x == 2. {
+                self.texture_y = 0.;
+                self.texture_x = 0.;
+        }
 
     }
 
-    fn key_press(&mut self, rl: &RaylibHandle) {
+    pub fn key_press(&mut self, rl: &RaylibHandle) {
         
         if (rl.is_key_pressed(KeyboardKey::KEY_SPACE) || rl.is_key_pressed(KeyboardKey::KEY_UP)) && self.jumping == Jump::OnGround {
             self.jumping = Jump::Jumping(true);
@@ -33,42 +47,53 @@ impl Mob for RobuRobu {
         }
 
     }
+    #[allow(dead_code, unused_variables)]
 
-    fn draw(&mut self, d: &mut RaylibDrawHandle) {
-        
-        d.draw_rectangle(self.x, self.y, self.w, self.h, Color::BLACK)
+    pub fn draw(&mut self, d: &mut RaylibDrawHandle) {
+        //d.draw_rectangle(self.x, self.y, self.w, self.h, Color::BLACK);
+        d.draw_texture_rec(&self.robu_robu, Rectangle{x: ((self.robu_robu.width/3) as f32) * self.texture_x, y: ((self.robu_robu.height/3) as f32) * self.texture_y, width: (self.robu_robu.width/3).as_f32(), height: (self.robu_robu.height/3).as_f32()}, Vector2{x: self.x as f32, y: self.y as f32}, Color::WHITE);
 
     }
 }
 
 impl RobuRobu {
-    pub fn create(x: i32, y: i32, _rl: &mut RaylibHandle) -> Self {
-        Self {
+    pub fn create(x: i32, y: i32, _rl: &mut RaylibHandle, thread: &RaylibThread) -> Self {
+        let mut guy = Self {
             x,
             y,
-            w: 50,
+            w: 72,
             h: 100,
-            jumping: Jump::OnGround
-        }
+            jumping: Jump::OnGround,
+            robu_robu: _rl.load_texture(thread, "src/resources/robu robu running.png").unwrap(),
+            ground_level: 0,
+            texture_x: 0.,
+            texture_y: 0.,
+        };
+        guy.ground_level = guy.y;
+        guy
     }
 
     fn jump(&mut self) {
 
+        let y = self.ground_level;
+        let jump_height = 150;
+
         match self.jumping {
+
             Jump::OnGround => return,
             Jump::Jumping(jumping) => {
-                                                if self.y > 190 && jumping {
+                                                if self.y > y-jump_height && jumping {
                                                     self.y -= 5;
                                                 } 
                                             
-                                                if self.y < 320 && !jumping{
+                                                if self.y < y && !jumping{
                                                     self.y += 5;
                                                 } 
                                                 
-                                                if self.y <= 190 {
+                                                if self.y <= y-jump_height {
                                                     self.jumping = Jump::Jumping(false);
                                                 }
-                                                if self.y >= 320 && !jumping {
+                                                if self.y >= y && !jumping {
                                                     self.jumping = Jump::OnGround;
                                                 }
                                             }

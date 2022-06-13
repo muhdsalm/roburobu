@@ -13,7 +13,7 @@ pub struct Timer {
 impl Timer {
     fn gen_obstacle_spawn_intervel(&mut self) {
 
-        self.obstacle_spawn_interval = rand::thread_rng().gen_range(700..3000);
+        self.obstacle_spawn_interval = rand::thread_rng().gen_range(800..3000);
         self.then_time = Instant::now();
         println!("{}", self.obstacle_spawn_interval)
     }

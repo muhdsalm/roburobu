@@ -1,6 +1,6 @@
 use raylib::prelude::*;
 
-use super::Mob;
+
 
 #[allow(dead_code)] //temporary allow dead code
 pub struct Obstacle {
@@ -10,19 +10,15 @@ pub struct Obstacle {
     h: i32,
 }
 
-impl Mob for Obstacle {
+impl Obstacle {
 
-    fn update(&mut self) {
+    pub fn update(&mut self, score: i128) {
         
-        self.x -= 5;
-
-    }
-    fn key_press(&mut self, rl: &RaylibHandle) {
-
+        self.x -= (5 + score / 100) as i32;
 
     }
 
-    fn draw(&mut self, d: &mut RaylibDrawHandle) {
+    pub fn draw(&mut self, d: &mut RaylibDrawHandle) {
         
         d.draw_rectangle(self.x, self.y, self.w, self.h, Color::BLACK)
 
