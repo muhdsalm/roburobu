@@ -11,16 +11,16 @@ pub struct Timer {
 }
 
 impl Timer {
-    fn gen_obstacle_spawn_intervel(&mut self) {
+    fn gen_obstacle_spawn_intervel(&mut self, score: i128) {
 
-        self.obstacle_spawn_interval = rand::thread_rng().gen_range(800..3000);
+        self.obstacle_spawn_interval = rand::thread_rng().gen_range(1000 - score as u128 /  10..3000);
         self.then_time = Instant::now();
         println!("{}", self.obstacle_spawn_interval)
     }
 
-    pub fn timer_fired(&mut self) -> bool {
+    pub fn timer_fired(&mut self, score: i128) -> bool {
         if self.obstacle_spawn_interval == 0 {
-            self.gen_obstacle_spawn_intervel();
+            self.gen_obstacle_spawn_intervel(score);
         }
         if self.then_time.elapsed().as_millis() > self.obstacle_spawn_interval {
 
@@ -29,7 +29,7 @@ impl Timer {
                 return true;
             }
 
-            self.gen_obstacle_spawn_intervel();
+            self.gen_obstacle_spawn_intervel(score);
             return true
         }
         false

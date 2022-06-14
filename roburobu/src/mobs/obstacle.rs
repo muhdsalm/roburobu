@@ -3,6 +3,7 @@ use raylib::prelude::*;
 
 
 #[allow(dead_code)] //temporary allow dead code
+#[derive(PartialEq, Clone, Copy)]
 pub struct Obstacle {
     x: i32,
     y: i32,
@@ -15,6 +16,8 @@ impl Obstacle {
     pub fn update(&mut self, score: i128) {
         
         self.x -= (5 + score / 100) as i32;
+
+
 
     }
 
@@ -42,6 +45,9 @@ impl Obstacle{
             height: self.h as f32,
 
         }
+    }
+    pub fn get_x(&self) -> i32{
+        self.x
     }
 
 }
